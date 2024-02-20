@@ -13,7 +13,7 @@ namespace uk.co.nfocus.ecommerce.finalproject
 {
     internal class TestCase : BaseClass
     {
-        [Test, Category("Shipping + Coupon")]
+        [Test, Order(1), Category("Shipping + Coupon")]
         public void TestCaseOne()
         {
             // Dismiss bottom link to prevent intercepted web elements
@@ -102,6 +102,44 @@ namespace uk.co.nfocus.ecommerce.finalproject
             // Logout of account
             home.GoAccountLogin();
             home.Logout();
+        }
+
+        [Test, Order(2), Category("Order + Billing")]
+        public void TestCaseTwo()
+        {
+            // Dismiss bottom link to prevent intercepted web elements
+            _driver.FindElement(By.CssSelector(".woocommerce-store-notice__dismiss-link")).Click();
+
+            // Get to the account page from home POM
+            HomePagePOM home = new(_driver);
+            home.GoAccountLogin();
+
+            // Use account POM to login to a placeholder account
+            AccountPagePOM account = new(_driver)
+            {
+                Username = Environment.GetEnvironmentVariable("EMAIL"),
+                Password = Environment.GetEnvironmentVariable("PASSWORD")
+            };
+            account.AccountLogin();
+
+            //Empty Basket check
+            _driver.FindElement(By.PartialLinkText("Cart")).Click();
+            try
+            {
+                _driver.FindElement(By.CssSelector(".remove")).Click();
+            }
+            catch (Exception)
+            {
+                //Do nothing, the basket is already empty
+            }
+
+            // Navigate back to shop once basket is emptied
+            account.ShopNavigate();
+
+            // Add items to cart and view cart
+            ShopPagePOM shop = new(_driver);
+            shop.AddItemToCart();
+            shop.VeiwCart();
         }
     }
 }
