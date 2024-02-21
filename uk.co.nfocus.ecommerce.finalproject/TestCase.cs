@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,24 @@ namespace uk.co.nfocus.ecommerce.finalproject
             HomePagePOM home = TestPrep();
 
             CartPagePOM cart = new(_driver);
+
+            cart.ProceedToCheckout();
+
+            CheckoutPagePOM checkout = new(_driver)
+            {
+                firstName = "Archie",
+                lastName = "Barnett",
+                streetAdress = Environment.GetEnvironmentVariable("STREET"),
+                townCity = Environment.GetEnvironmentVariable("TOWN"),
+                postcode = Environment.GetEnvironmentVariable("POSTCODE"),
+                phone = Environment.GetEnvironmentVariable("PHONE"),
+                email = Environment.GetEnvironmentVariable("EMAIL")
+            };
+
+            //Seperate reference for stale element (Thread works, web driver wait doesnt work)
+            Thread.Sleep(500);
+            var checkPayment = _driver.FindElement(By.CssSelector(".wc_payment_method.payment_method_cheque"));
+            checkPayment.Click();
         }
 
         // Seperate function since both tests start almost identically (Return home POM to access logout function)

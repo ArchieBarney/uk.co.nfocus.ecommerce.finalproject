@@ -30,6 +30,8 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
 
         private IWebElement _finalTotal => _driver.FindElement(By.CssSelector("tr[class='order-total'] bdi:nth-child(1)"));
 
+        private IWebElement _checkoutButton => _driver.FindElement(By.PartialLinkText("Proceed to checkout"));
+
         public string coupon
         {
             set
@@ -60,6 +62,11 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
         public void ApplyCoupon()
         {
             _applyCouponButton.Click();
+        }
+
+        public void ProceedToCheckout()
+        {
+            _checkoutButton.Click();
         }
     }
 }
