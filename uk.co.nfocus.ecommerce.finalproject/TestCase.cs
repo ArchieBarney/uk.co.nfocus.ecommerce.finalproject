@@ -16,39 +16,7 @@ namespace uk.co.nfocus.ecommerce.finalproject
         [Test, Order(1), Category("Shipping + Coupon")]
         public void TestCaseOne()
         {
-            // Dismiss bottom link to prevent intercepted web elements
-            _driver.FindElement(By.CssSelector(".woocommerce-store-notice__dismiss-link")).Click();
-
-            // Get to the account page from home POM
-            HomePagePOM home = new(_driver);
-            home.GoAccountLogin();
-
-            // Use account POM to login to a placeholder account
-            AccountPagePOM account = new(_driver)
-            {
-                Username = Environment.GetEnvironmentVariable("EMAIL"),
-                Password = Environment.GetEnvironmentVariable("PASSWORD")
-            };
-            account.AccountLogin();
-
-            //Empty Basket check
-            _driver.FindElement(By.PartialLinkText("Cart")).Click();
-            try
-            {
-                _driver.FindElement(By.CssSelector(".remove")).Click();
-            }
-            catch (Exception)
-            {
-                //Do nothing, the basket is already empty
-            }
-
-            // Navigate back to shop once basket is emptied
-            account.ShopNavigate();
-
-            // Add items to cart and view cart
-            ShopPagePOM shop = new(_driver);
-            shop.AddItemToCart();
-            shop.VeiwCart();
+            HomePagePOM home = TestPrep();
 
             // Apply coupon using POM
             CartPagePOM cart = new(_driver)
@@ -74,8 +42,7 @@ namespace uk.co.nfocus.ecommerce.finalproject
             }
 
             // Reporting for the coupon assertion
-            ScrollElementIntoView(_driver, cart.GetFinalTotal());
-            string couponScreenshot = ScreenshotElement(_driver, "coupon.png");
+            string couponScreenshot = ScrollElementIntoView(_driver, cart.GetCouponAmount(), "coupon.png");
             Console.WriteLine("Coupon has applied 15%");
             TestContext.AddTestAttachment(couponScreenshot);
 
@@ -94,8 +61,7 @@ namespace uk.co.nfocus.ecommerce.finalproject
             }
 
             // Reporting for the shipping + total assertion
-            ScrollElementIntoView(_driver, cart.GetFinalTotal());
-            string totalScreenshot = ScreenshotElement(_driver, "total.png");
+            string totalScreenshot = ScrollElementIntoView(_driver, cart.GetFinalTotal(), "total.png");
             Console.WriteLine("Total has been sufficiently calculated");
             TestContext.AddTestAttachment(totalScreenshot);
 
@@ -106,6 +72,14 @@ namespace uk.co.nfocus.ecommerce.finalproject
 
         [Test, Order(2), Category("Order + Billing")]
         public void TestCaseTwo()
+        {
+            HomePagePOM home = TestPrep();
+
+            CartPagePOM cart = new(_driver);
+        }
+
+        // Seperate function since both tests start almost identically (Return home POM to access logout function)
+        public HomePagePOM TestPrep()
         {
             // Dismiss bottom link to prevent intercepted web elements
             _driver.FindElement(By.CssSelector(".woocommerce-store-notice__dismiss-link")).Click();
@@ -140,6 +114,8 @@ namespace uk.co.nfocus.ecommerce.finalproject
             ShopPagePOM shop = new(_driver);
             shop.AddItemToCart();
             shop.VeiwCart();
+
+            return home;
         }
     }
 }

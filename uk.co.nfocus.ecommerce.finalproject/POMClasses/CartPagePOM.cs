@@ -52,6 +52,11 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
             return _finalTotal;
         }
 
+        public IWebElement GetCouponAmount()
+        {
+            return _couponAmount;
+        }
+
         public void ApplyCoupon()
         {
             _applyCouponButton.Click();
