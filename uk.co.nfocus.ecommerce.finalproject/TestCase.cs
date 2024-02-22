@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using NUnit.Framework.Legacy;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -76,10 +77,11 @@ namespace uk.co.nfocus.ecommerce.finalproject
         {
             HomePagePOM home = TestPrep();
 
+            // Set the cart up to proceed to checkout
             CartPagePOM cart = new(_driver);
-
             cart.ProceedToCheckout();
 
+            // Instansiate the checkout class with all the required fields to pass an order
             CheckoutPagePOM checkout = new(_driver)
             {
                 firstName = "Archie",
@@ -91,10 +93,39 @@ namespace uk.co.nfocus.ecommerce.finalproject
                 email = Environment.GetEnvironmentVariable("EMAIL")
             };
 
-            //Seperate reference for stale element (Thread works, web driver wait doesnt work)
-            Thread.Sleep(500);
+            // Seperate reference for stale element (Thread works, web driver wait doesnt work)
+            Thread.Sleep(1000);
             var checkPayment = _driver.FindElement(By.CssSelector(".wc_payment_method.payment_method_cheque"));
             checkPayment.Click();
+
+            checkout.PlaceOrder();
+
+            // Wait for the page to load in order to recieve the order number
+            StaticWaitForElement(_driver, By.CssSelector("li[class='woocommerce-order-overview__order order'] strong"));
+            Console.WriteLine("Order number is: " + checkout.Order_Number);
+
+            // Go back to the account and get access to the account order history
+            home.GoAccountLogin();
+            AccountPagePOM account = new AccountPagePOM(_driver);
+            account.GoToAccountOrders();
+            Console.WriteLine(account.Account_Order_Num.Remove(0,1));
+
+            try
+            {
+                Assert.That(account.Account_Order_Num.Remove(0, 1), Does.Contain(checkout.Order_Number));
+            }catch (Exception)
+            {
+                throw new Exception("order on checkout does not appear on account");
+            }
+
+            // Reporting for the Order number assertion
+            string totalScreenshot = ScrollElementIntoView(_driver, home.GetLogoutButton(), "ordernum.png");
+            Console.WriteLine("Order number has been recorded and shows on the account");
+            TestContext.AddTestAttachment(totalScreenshot);
+            
+            // Logout of account
+            home.GoAccountLogin();
+            home.Logout();
         }
 
         // Seperate function since both tests start almost identically (Return home POM to access logout function)

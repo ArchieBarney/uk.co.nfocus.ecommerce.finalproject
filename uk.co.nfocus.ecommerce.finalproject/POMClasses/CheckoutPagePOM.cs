@@ -31,6 +31,10 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
 
         private IWebElement _emailField => _driver.FindElement(By.CssSelector("#billing_email"));
 
+        private IWebElement _placeOrderButton => _driver.FindElement(By.CssSelector("#place_order"));
+
+        private IWebElement _orderNumber => _driver.FindElement(By.CssSelector("li[class='woocommerce-order-overview__order order'] strong"));
+
         public string firstName
         {
             set
@@ -92,6 +96,13 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
                 _emailField.Clear();
                 _emailField.SendKeys(value);
             }
+        }
+
+        public string Order_Number => _orderNumber.Text;
+
+        public void PlaceOrder()
+        {
+            _placeOrderButton.Click();
         }
     }
 }

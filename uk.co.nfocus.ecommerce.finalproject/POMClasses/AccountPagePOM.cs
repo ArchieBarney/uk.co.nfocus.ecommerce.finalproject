@@ -27,6 +27,10 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
 
         private IWebElement _shopButton => _driver.FindElement(By.PartialLinkText("Shop"));
 
+        private IWebElement _accountOrders => _driver.FindElement(By.PartialLinkText("Orders"));
+
+        private IWebElement _topAccountOrderNum => _driver.FindElement(By.CssSelector("tbody :first-child :first-child a"));
+
         public string Username
         {
             set
@@ -45,6 +49,8 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
             }
         }
 
+        public string Account_Order_Num => _topAccountOrderNum.Text;
+
         public void AccountLogin()
         {
             _loginButton.Click();
@@ -53,6 +59,11 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
         public void ShopNavigate()
         {
             _shopButton.Click();
+        }
+
+        public void GoToAccountOrders()
+        {
+            _accountOrders.Click();
         }
     }
 }
