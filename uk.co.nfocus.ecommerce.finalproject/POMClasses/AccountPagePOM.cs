@@ -65,5 +65,10 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
         {
             _accountOrders.Click();
         }
+
+        public IWebElement GetAccountOrders()
+        {
+            return _accountOrders;
+        }
     }
 }

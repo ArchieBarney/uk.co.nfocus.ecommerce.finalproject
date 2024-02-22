@@ -29,10 +29,5 @@ namespace uk.co.nfocus.ecommerce.finalproject.POMClasses
         {
             _logoutButton.Click();
         }
-
-        public IWebElement GetLogoutButton()
-        {
-            return _logoutButton;
-        }
     }
 }

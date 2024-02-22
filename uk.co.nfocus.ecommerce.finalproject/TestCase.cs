@@ -102,24 +102,24 @@ namespace uk.co.nfocus.ecommerce.finalproject
 
             // Wait for the page to load in order to recieve the order number
             StaticWaitForElement(_driver, By.CssSelector("li[class='woocommerce-order-overview__order order'] strong"));
-            Console.WriteLine("Order number is: " + checkout.Order_Number);
+            string checkoutOrderNumber = checkout.Order_Number;
+            Console.WriteLine("Order number is: " + checkoutOrderNumber);
 
             // Go back to the account and get access to the account order history
             home.GoAccountLogin();
             AccountPagePOM account = new AccountPagePOM(_driver);
             account.GoToAccountOrders();
-            Console.WriteLine(account.Account_Order_Num.Remove(0,1));
 
             try
             {
-                Assert.That(account.Account_Order_Num.Remove(0, 1), Does.Contain(checkout.Order_Number));
+                Assert.That(account.Account_Order_Num.Remove(0, 1), Is.EqualTo(checkoutOrderNumber));
             }catch (Exception)
             {
                 throw new Exception("order on checkout does not appear on account");
             }
 
             // Reporting for the Order number assertion
-            string totalScreenshot = ScrollElementIntoView(_driver, home.GetLogoutButton(), "ordernum.png");
+            string totalScreenshot = ScrollElementIntoView(_driver, account.GetAccountOrders(), "ordernum.png");
             Console.WriteLine("Order number has been recorded and shows on the account");
             TestContext.AddTestAttachment(totalScreenshot);
             
